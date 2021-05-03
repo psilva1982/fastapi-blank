@@ -8,6 +8,16 @@
 #     else:
 #         return result
 
+# async def db_check_token_username(username):
+#     query = """ select * from users where username = :username """
+#     values = { "username": username }
+
+#     result = await fetch(query, True, values)
+#     if result is None:
+#         return False
+#     else:
+#         return True
+
 from database.config import users_collection
 
 def jwtuser_helper(jwtuser) -> dict:
@@ -31,13 +41,3 @@ async def db_check_jwt_user(user):
         return result
     else:
         return None
-
-# async def db_check_token_username(username):
-#     query = """ select * from users where username = :username """
-#     values = { "username": username }
-
-#     result = await fetch(query, True, values)
-#     if result is None:
-#         return False
-#     else:
-#         return True
