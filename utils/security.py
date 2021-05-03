@@ -1,10 +1,10 @@
-from utils.db_functions import db_check_jwt_user, db_check_token_username
+from database.db_users_functions import db_check_jwt_user
 from fastapi import Depends, HTTPException
 from datetime import datetime as dt, timedelta
 from jose import jwt
 import time
 from passlib.context import CryptContext
-from models.jwt_user import JWTUser
+from models.security.jwt_user import JWTUser
 from utils.constants import JWT_EXPIRATION_TIME_MINUTES, JWT_ALGOTITH, JWT_SECRET_KEY
 from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_401_UNAUTHORIZED
@@ -23,8 +23,9 @@ async def authenticate_user(user: JWTUser):
     potencial_users = await db_check_jwt_user(user)
     is_valid = False
     for db_user in potencial_users:
-        if verify_password(user.password, db_user['password']): 
-            is_valid = True 
+        print(db_user['password'])     
+        # if verify_password(user.password, db_user['password']): 
+        #     is_valid = True 
 
     if is_valid:
         user.role = "admin"

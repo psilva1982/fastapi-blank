@@ -6,6 +6,8 @@ motor==2.4.0
 pydantic==1.8.1
 pymongo==3.11.3
 python-decouple==3.4
+python-multipart==0.0.5
+six==1.15.0
 starlette==0.13.6
 typing-extensions==3.10.0.0
 uvicorn==0.13.4
