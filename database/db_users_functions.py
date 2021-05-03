@@ -10,11 +10,25 @@
 
 from database.config import users_collection
 
+def jwtuser_helper(jwtuser) -> dict:
+    return {
+        "id": str(jwtuser["_id"]),
+        "name": jwtuser["name"],
+        "email": jwtuser["email"],
+        "password": jwtuser['password'],
+        "role": jwtuser['role']
+    }
+
+
 async def db_check_jwt_user(user): 
-    user = await users_collection.find_one({"username": user.username})
-    if user:
-        print(user)
-        return user 
+    users = users_collection.find({"username": user.username})
+    if users: 
+        
+        result = []
+        async for user in users:
+            result.append(user)
+
+        return result
     else:
         return None
 

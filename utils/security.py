@@ -23,9 +23,8 @@ async def authenticate_user(user: JWTUser):
     potencial_users = await db_check_jwt_user(user)
     is_valid = False
     for db_user in potencial_users:
-        print(db_user['password'])     
-        # if verify_password(user.password, db_user['password']): 
-        #     is_valid = True 
+        if verify_password(user.password, db_user['password']): 
+            is_valid = True 
 
     if is_valid:
         user.role = "admin"
