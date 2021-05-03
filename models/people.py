@@ -1,6 +1,5 @@
-from pydantic.fields import Schema
 from typing import Optional
-from pydantic import BaseModel, Schema
+from pydantic import BaseModel
 from fastapi import Query
 from bson import ObjectId
 
