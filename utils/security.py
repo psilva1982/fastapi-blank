@@ -5,7 +5,7 @@ from jose import jwt
 import time
 from passlib.context import CryptContext
 from models.security.jwt_user import JWTUser
-from utils.constants import JWT_EXPIRATION_TIME_MINUTES, JWT_ALGOTITH, JWT_SECRET_KEY
+from utils.constants import JWT_TOKEN_EXPIRATION_TIME_MINUTES, JWT_REFRESH_TOKEN_EXPIRATION_TIME_MINUTES, JWT_ALGORITH, JWT_SECRET_KEY
 from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_401_UNAUTHORIZED
 
@@ -33,21 +33,40 @@ async def authenticate_user(user: JWTUser):
     return None
 
 # Create access JWT token 
-def create_jwt_token(user: JWTUser):
-    expiration = dt.utcnow() + timedelta(minutes=JWT_EXPIRATION_TIME_MINUTES)
+def create_jwt_token(user: JWTUser, type: str = 'token'):
+
+    if type == 'refresh': 
+        expiration = dt.utcnow() + timedelta(minutes=JWT_REFRESH_TOKEN_EXPIRATION_TIME_MINUTES)
+    else:
+        print('criando token')
+        expiration = dt.utcnow() + timedelta(minutes=JWT_TOKEN_EXPIRATION_TIME_MINUTES)
+
     jwt_payload = {
         "sub": user.username,
         "role": user.role,
         "exp": expiration
     }
-    jwt_token = jwt.encode(jwt_payload, JWT_SECRET_KEY, algorithm=JWT_ALGOTITH)
+    jwt_token = jwt.encode(jwt_payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITH)
 
     return jwt_token
+
+def create_jwt_token_with_refresh(token: str):
+    jwt_payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=JWT_ALGORITH)
+    user_data = { 
+        'username': jwt_payload.get('sub'),
+        'password': '',
+        'role': jwt_payload.get('role')
+    }
+
+    jwt_token = create_jwt_token(JWTUser(**user_data))
+
+    return jwt_token
+
 
 # Check wheather JWT token is correct 
 async def check_jwt_token(token: str = Depends(oauth_schema)):
     try:
-        jwt_payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=JWT_ALGOTITH)
+        jwt_payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=JWT_ALGORITH)
         username = jwt_payload.get('sub')
         role = jwt_payload.get('role')
         expiration = jwt_payload.get('exp')
@@ -58,7 +77,6 @@ async def check_jwt_token(token: str = Depends(oauth_schema)):
                 return final_checks(role)
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)
 
     raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)

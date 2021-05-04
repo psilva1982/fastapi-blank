@@ -8,7 +8,7 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from routes.versions import app_v1, app_v2
 from datetime import datetime
 from models.security.jwt_user import JWTUser
-from utils.security import authenticate_user, create_jwt_token, check_jwt_token
+from utils.security import authenticate_user, create_jwt_token, check_jwt_token, create_jwt_token_with_refresh
 
 app = FastAPI(title="Blank Project", description='FastAPI Blank Project with MongoDB', version='0.0.1')
 
@@ -26,8 +26,25 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED) 
     
     jwt_token = create_jwt_token(user)
-    return {"access_token": jwt_token}
+    jwt_refresh = create_jwt_token(user, 'refresh')
 
+    return {
+        "access_token": jwt_token,
+        'refresh_token': jwt_refresh
+    }
+
+@app.post("/token/refresh")
+async def get_token_with_refresh(refresh: str):
+
+    check = await check_jwt_token(refresh)
+    
+    if check:
+        jwt_token = create_jwt_token_with_refresh(refresh)
+
+        return {
+            "access_token": jwt_token,
+            "refresh_token": refresh
+        }
 
 @app.middleware("http")
 async def middleware(request: Request, call_next):
