@@ -1,23 +1,3 @@
-# async def db_check_jwt_user(user):
-#     query = """ select * from users where username = :username """
-#     values = { "username": user.username }
-
-#     result = await fetch(query, False, values)
-#     if result is None:
-#         return None
-#     else:
-#         return result
-
-# async def db_check_token_username(username):
-#     query = """ select * from users where username = :username """
-#     values = { "username": username }
-
-#     result = await fetch(query, True, values)
-#     if result is None:
-#         return False
-#     else:
-#         return True
-
 from database.config import users_collection
 
 def jwtuser_helper(jwtuser) -> dict:
@@ -29,9 +9,8 @@ def jwtuser_helper(jwtuser) -> dict:
         "role": jwtuser['role']
     }
 
-
-async def db_check_jwt_user(user): 
-    users = users_collection.find({"username": user.username})
+async def db_check_jwt_user(jwt_user): 
+    users = users_collection.find({"username": jwt_user.username})
     if users: 
         
         result = []
@@ -41,3 +20,11 @@ async def db_check_jwt_user(user):
         return result
     else:
         return None
+
+
+async def db_check_token_username(username):
+    user = users_collection.find_one({"username": username})
+    if user is None:
+        return False
+    else:
+        return True

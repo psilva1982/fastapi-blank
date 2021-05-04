@@ -1,0 +1,7 @@
+#openssl rand -hex 32
+JWT_SECRET_KEY=fb43e424da3d616ef40aab5823a9a0b5fa4f822e4c3e485b06a7feb830141c80
+
+DB_HOST=localhost
+DB_USER=admin   
+DB_PASS=admin
+DB_DATABASE=blank

@@ -1,4 +1,4 @@
-from database.db_users_functions import db_check_jwt_user
+from database.db_users_functions import db_check_jwt_user, db_check_token_username
 from fastapi import Depends, HTTPException
 from datetime import datetime as dt, timedelta
 from jose import jwt
